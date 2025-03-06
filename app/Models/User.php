@@ -8,10 +8,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
+
+
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
+    
 
     /**
      * The attributes that are mass assignable.
@@ -46,7 +49,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    // public function articles(){
-    //     return $this->hasMany(Article::class);
+
+    public function articles(){
+        return $this->hasMany(Article::class);
+    }
+
+    // public function comments()
+    // {
+    //     return $this->hasMany(Comment::class);
     // }
 }
