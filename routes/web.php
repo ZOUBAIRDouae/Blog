@@ -43,3 +43,7 @@ Route::middleware('auth' , 'role:admin')->group(function () {
 
 Route::get('/',[ ArticleController::class , 'index'])->name('public.index');
 Route::get('/{article}',[ ArticleController::class , 'show'])->name('public.show');
+
+
+
+
