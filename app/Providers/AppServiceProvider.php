@@ -5,14 +5,19 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Pagination\Paginator;
 
+use App\Models\Article;
+use App\Policies\ArticlePolicy;
+
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
+
+    protected $policies = [
+        Article::class => ArticlePolicy::class,
+    ];
+    
     public function register(): void
     {
-        //
+
     }
 
     /**
