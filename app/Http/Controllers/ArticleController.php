@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Tag;
 use App\Models\User;
 
+use App\Http\Requests\ArticleRequest;
+
 class ArticleController extends Controller
 {
   /**
@@ -78,28 +80,35 @@ class ArticleController extends Controller
   /**
    * Store a newly created resource in storage.
    */
-  public function store(Request $request)
+  public function store(ArticleRequest $request)
   {
     if (!Auth::check() || !Auth::user()->roles->contains('name', 'admin')) {
       return redirect()->route('articles.index');
     }
 
-    $validated = $request->validate([
-      'title' => 'required|string|max:255',
-      'category' => 'required|exists:categories,id',
-      'content' => 'required|string',
-      'tags' => 'array',
-      'tags.*' => 'exists:tags,id',
-    ]);
+    // $validated = $request->validate([
+    //   'title' => 'required|string|max:255',
+    //   'category' => 'required|exists:categories,id',
+    //   'content' => 'required|string',
+    //   'tags' => 'array',
+    //   'tags.*' => 'exists:tags,id',
+    // ]);
 
+    // $article = Article::create([
+    //   'title' => $validated['title'],
+    //   'category_id' => $validated['category'],
+    //   'content' => $validated['content'],
+    // ]);
+
+    
     $article = Article::create([
-      'title' => $validated['title'],
-      'category_id' => $validated['category'],
-      'content' => $validated['content'],
+          'title' => $request['title'],
+          'category_id' => $request['category'],
+          'content' => $request['content'],
     ]);
 
     // Attach selected tags
-    $article->tags()->attach($validated['tags'] ?? []);
+    $article->tags()->attach($request->tags);
 
     return redirect()->route('articles.index')->with('success', 'L\'article a bien été créé');
   }
