@@ -5,6 +5,8 @@ namespace Database\Factories;
 use App\Models\Article;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+use App\Models\User;
+
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Article>
  */
@@ -22,6 +24,7 @@ class ArticleFactory extends Factory
             'title' => $this->faker->sentence(3),
             'content' => $this->faker->paragraph(5),
             'category_id' => $this->faker->numberBetween(1, 10),
+            'user_id' => User::inRandomOrder()->first()->id,
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
         ];

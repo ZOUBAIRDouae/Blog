@@ -89,7 +89,7 @@
                             <td>
                                 <a href="{{ route('articles.show', $article->id) }}" class="btn btn-secondary">{{ __(key: 'message.display')}}</a>
 
-                                @can('articles.edit', $article->id)
+                                @can('update', $article)
 
                                 <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-primary">{{ __(key: 'message.edit')}}</a>
                                 @endcan

@@ -14,6 +14,15 @@ class ArticleRequest extends FormRequest
         return true;
     }
 
+
+    protected function prepareForValidation()
+    {
+        // Merge the authenticated user's ID into the request data.
+        $this->merge([
+            'user_id' => auth()->id(),
+        ]);
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -27,6 +36,7 @@ class ArticleRequest extends FormRequest
             'content' => 'required|string',
             'tags' => 'array',
             'tags.*' => 'exists:tags,id',
+            'user_id'    => 'required|exists:users,id',
         ];
     }
 }

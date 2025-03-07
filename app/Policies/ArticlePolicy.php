@@ -37,7 +37,7 @@ class ArticlePolicy
      */
     public function update(User $user, Article $article): bool
     {
-        return $user->id === $article->user->id && $user->hasPermissionTo('edit');
+        return $user->id === $article->user_id && $user->hasPermissionTo('edit');
     }
 
     /**

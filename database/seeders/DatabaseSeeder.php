@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             TagSeeder::class,
             ArticleSeeder::class,
             ArticleTagSeeder::class,
+            RolePermissionSeeder::class,
         ]);
     }
 }

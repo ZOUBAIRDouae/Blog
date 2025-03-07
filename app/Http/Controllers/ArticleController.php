@@ -105,6 +105,7 @@ class ArticleController extends Controller
           'title' => $request['title'],
           'category_id' => $request['category'],
           'content' => $request['content'],
+          'user_id'     => Auth::user()->id,
     ]);
 
     // Attach selected tags
@@ -139,6 +140,7 @@ class ArticleController extends Controller
     }
 
     $article = Article::findOrFail($id);
+    $this->authorize('edit', $article);
     $categories = Category::all();
     $allTags = Tag::all();
     $selectedTags = $article->tags->pluck('id')->toArray();

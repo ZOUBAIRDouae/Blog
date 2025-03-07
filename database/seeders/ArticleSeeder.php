@@ -6,6 +6,8 @@ use App\Models\Article;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+use App\Models\User;
+
 class ArticleSeeder extends Seeder
 {
     /**
@@ -13,6 +15,9 @@ class ArticleSeeder extends Seeder
      */
     public function run(): void
     {
-        Article::factory()->count(100)->create();
+
+        Article::factory()->count(5)->create();
+
+        
     }
 }
