@@ -17,9 +17,26 @@ class RolePermissionSeeder extends Seeder
         
         $admin = Role::where(['name' => 'admin'])->first();
 
-        Permission::create(['name' => 'edit']);
+        // Permission::create(['name' => 'edit']);
         // Permission::create(['name' => 'view public']);
-        $admin->givePermissionTo('edit');
+        // $admin->givePermissionTo('edit');
+
+
+        Role::query()->delete();
+
+                // Créer les rôles
+                Role::create(['name' => 'admin']);
+                
+
+        Role::updateOrCreate(
+            ['name' => 'admin'], // Recherche d'abord par le nom
+            ['guard_name' => 'web'] // Assure que le guard_name est bien défini
+        );
+
+        Role::updateOrCreate(
+            ['name' => 'user'],
+            ['guard_name' => 'web']
+        );
 
         
 
