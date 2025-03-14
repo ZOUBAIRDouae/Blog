@@ -1,13 +1,15 @@
 <?php
 
-namespace Database\Seeders;
+namespace Modules\Blog\Database\Seeders;
 
 use Modules\Blog\Models\User;
-use Modules\Blog\database\seeders\DatabaseSeederBlog;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+
+
+
+class DatabaseSeederBlog extends Seeder
 {
     /**
      * Seed the application's database.
@@ -18,10 +20,11 @@ class DatabaseSeeder extends Seeder
 
 
         $this->call([
-            RoleSeeder::class,
-            RolePermissionSeeder::class,
-            DatabaseSeederBlog::class
-
+            AdminSeeder::class,
+            CategorySeeder::class,
+            TagSeeder::class,
+            ArticleSeeder::class,
+            ArticleTagSeeder::class,
         ]);
     }
 }
