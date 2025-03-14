@@ -1,6 +1,6 @@
 <?php
 
-namespace Database\Factories\Modules\Blog\Models;
+namespace Modules\Blog\Database\Factories;
 
 
 use Modules\Blog\Models\Category;

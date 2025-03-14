@@ -1,10 +1,11 @@
 <?php
 
-namespace database\factories\Modules\Blog\Models;
+namespace Modules\Blog\Database\Seeders;
 
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+
 use Modules\Blog\Models\Category;
 
 class CategorySeeder extends Seeder
@@ -15,6 +16,13 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         //
-        Category::factory()->count(20)->create();
+        $category = Category::create([
+            'name'  => 'Category 1',
+        ]);
+
+        $category = Category::create([
+            'name'  => 'Category 2',
+        ]);
+        
     }
 }

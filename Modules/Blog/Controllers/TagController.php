@@ -2,59 +2,43 @@
 
 namespace Modules\Blog\Controllers;
 
+use Modules\Blog\Services\TagService;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Models\Tag;
 
 class TagController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   */
-  public function index(Request $request)
-  {
-    $query = Tag::query();
-    if($request->has('search') && $request->search != ''){
-      $query->where('name', 'like', '%' . $request->search . '%');
+    protected $tagService;
+
+    public function __construct(TagService $tagService)
+    {
+        $this->tagService = $tagService;
     }
 
-    $tags = $query->paginate(10);
-    return view('admin.tag.index', compact('tags'));
-  }
+    public function index(Request $request)
+    {
+        $tags = $this->tagService->getTags($request->search ?? '');
+        return view('Blog::admin.tag.index', compact('tags'));
+    }
 
-  /**
-   * Show the form for creating a new resource.
-   */
-  public function create()
-  {
-    return view('admin.tag.create');
-  }
+    public function create()
+    {
+        return view('Blog::admin.tag.create');
+    }
 
-  /**
-   * Store a newly created resource in storage.
-   */
-  public function store(Request $request)
-  {
-    $request->validate([
-      'name' => 'required|string|max:255',
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
 
-    $tag = new Tag();
-    $tag->name = $request->name;
-    $tag->save();
+        $this->tagService->createTag($validated);
+        return redirect()->route('Blog::tags.index')->with('success', 'Le tag a bien été créé');
+    }
 
-    return redirect()->route('tags.index')->with('success', 'Le tag a bien été créé');
-  }
-
-  /**
-   * Remove the specified resource from storage.
-   */
-  public function destroy(string $id)
-  {
-
-    $tag = Tag::findOrFail($id);
-    $tag->delete();
-
-    return redirect()->route('tags.index')->with('success', 'Le tag a bien été supprimé');
-  }
+    public function destroy(string $id)
+    {
+        $this->tagService->deleteTag($id);
+        return redirect()->route('Blog::tags.index')->with('success', 'Le tag a bien été supprimé');
+    }
 }

@@ -5,7 +5,8 @@ namespace Modules\Blog\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Testing\Fluent\Concerns\Has;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\Category;
+
+use Modules\Blog\Models\Category;
 
 class Article extends Model
 {

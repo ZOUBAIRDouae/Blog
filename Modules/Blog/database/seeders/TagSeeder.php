@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\database\seeders;
+namespace Modules\Blog\Database\Seeders;
 
 use Modules\Blog\Models\Tag;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -14,6 +14,12 @@ class TagSeeder extends Seeder
     public function run(): void
     {
         //
-        Tag::factory()->count(10)->create();
+        $tag = Tag::create([
+            'name'  => 'Tag 1',
+        ]);
+
+        $tag = Tag::create([
+            'name'  => 'Tag 2',
+        ]);
     }
 }

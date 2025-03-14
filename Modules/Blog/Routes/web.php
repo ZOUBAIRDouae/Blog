@@ -1,7 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+
 use Illuminate\Support\Facades\Auth;
+
 use Modules\Blog\Controllers\ArticleController;
 use Modules\Blog\Controllers\CategoryController;
 use Modules\Blog\Controllers\CommentController;
@@ -18,11 +21,7 @@ Route::prefix('articles')->group(function () {
   Route::put('/{article}', [ArticleController::class, 'update'])->name('articles.update');
   Route::delete('/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 });
-Route::middleware('auth')->group(function () {
-  Route::post('/store', [CommentController::class, 'store'])->name('comments.store');
-  Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
- 
-});
+
 
 Route::middleware('auth' , 'role:admin')->group(function () { 
   Route::prefix('tags')->group(function () {
@@ -45,5 +44,16 @@ Route::get('/',[ ArticleController::class , 'index'])->name('public.index');
 Route::get('/{article}',[ ArticleController::class , 'show'])->name('public.show');
 
 
+
+
+
+Auth::routes();
+
+
+Route::middleware('auth')->group(function () {
+  Route::post('/store', [CommentController::class, 'store'])->name('comments.store');
+  Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+ 
+});
 
 

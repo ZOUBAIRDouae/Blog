@@ -12,9 +12,11 @@ class BlogServiceProvider extends ServiceProvider
         $this->loadRoutesFrom(__DIR__.'/../../Routes/web.php');
         $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
         $this->loadViewsFrom(__DIR__.'/../../Resources/views', 'Blog');
+        $this->loadTranslationsFrom(__DIR__.'/../../lang' , 'Blog');
         $this->publishes([
             __DIR__.'/../../Resources/views' => resource_path('views/vendor/Blog'),
         ], 'Blog-views');
+        
         
     }
 

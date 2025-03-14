@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Policies;
+namespace Modules\Blog\Policies;
 
-use App\Models\Article;
-use App\Models\User;
+use Modules\Blog\Models\Article;
+use Modules\Blog\Models\User;
 use Illuminate\Auth\Access\Response;
 
 class ArticlePolicy
@@ -45,7 +45,8 @@ class ArticlePolicy
      */
     public function delete(User $user, Article $article): bool
     {
-        return false;
+       
+        return $user->id === $article->user_id && $user->hasPermissionTo('supprimer');
     }
 
     /**

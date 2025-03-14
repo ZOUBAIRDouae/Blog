@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Blog\database\seeders;
+namespace Modules\Blog\Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -16,16 +16,12 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
 
-        // Vérifier si l'utilisateur existe
-        $user = User::where('email', 'naima@gmail.com')->first();
-
-        User::truncate();
 
 
         $user = User::create([
-            'name' => 'naima',
-            'email' => 'naima@gmail.com',
-            'password' => bcrypt('admin1234')]);
+            'name' => 'Admin',
+            'email' => 'admin@gmail.com',
+            'password' => bcrypt('password')]);
             
         $role = Role::findByName('admin', 'web');  // Spécifie le guard
         $user->assignRole('admin');

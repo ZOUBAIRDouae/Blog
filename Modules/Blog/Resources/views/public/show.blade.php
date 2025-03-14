@@ -51,7 +51,7 @@
 
         <!-- Article Content -->
         <div class="mt-6 text-gray-700 leading-relaxed space-y-4">
-            {{ $article->content }}
+            {!!$article->content!!}
         </div>
 
         <!-- Buttons -->

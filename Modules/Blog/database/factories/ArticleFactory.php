@@ -1,6 +1,6 @@
 <?php
 
-namespace database\factories\Modules\Blog\Models;
+namespace Modules\Blog\Database\Factories;
 
 
 use Modules\Blog\Models\Article;

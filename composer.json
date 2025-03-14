@@ -28,11 +28,15 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
             "Modules\\Blog\\": "Modules/Blog/"
-        }
+        },
+        "classmap": [
+            "Modules/Blog/database/factories"
+        ]
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "Database\\Seeders\\": "database/seeders/"
         }
     },
     "scripts": {

@@ -1,12 +1,14 @@
 <?php
 
-namespace Modules\Blog\database\seeders;
+namespace Modules\Blog\Database\Seeders;
 
-use Modules\Blog\Article;
+use Modules\Blog\Models\Article;
+use Modules\Blog\Models\User;
+
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-use App\Models\User;
+
 
 class ArticleSeeder extends Seeder
 {
@@ -15,8 +17,21 @@ class ArticleSeeder extends Seeder
      */
     public function run(): void
     {
+        $article = Article::create([
+            'title' => 'Article 1',
+            'content' => 'Content 1',
+            'category_id' => 1,
+            'user_id' => User::first()->id
+        ]);
 
-        Article::factory()->count(5)->create();
+        $article = Article::create([
+            'title' => 'Article 2',
+            'content' => 'Content 2',
+            'category_id' => 2,
+            'user_id' => User::first()->id
+        ]);
+
+       
 
         
     }

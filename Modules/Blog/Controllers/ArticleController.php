@@ -2,197 +2,109 @@
 
 namespace Modules\Blog\Controllers;
 
-use Modules\Blog\Article;
-use Modules\Blog\Category;
-use Modules\Blog\Comment;
-use Modules\Blog\Tag;
-use Modules\Blog\User;
+use App\Http\Controllers\Controller;
+
+use Modules\Blog\Models\Article;
+use Modules\Blog\Models\Tag;
+use Modules\Blog\Models\Category;
+
+
+use Modules\Blog\Services\ArticleService;
+use Modules\Blog\Requests\ArticleRequest;
 
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Auth;
-
-
-use App\Http\Requests\ArticleRequest;
 
 class ArticleController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   */
- 
-  public function index(Request $request)
-  {
-    $query = Article::query();
-    
-    $ArticleCount= Article::count();
-    $CommentCount = Comment::count();
-    $UserCount = User::count();
+    protected $articleService;
 
-    // Filtrer par catégorie
-    if ($request->has('category') && $request->category != '') {
-      $query->where('category_id', $request->category);
+    public function __construct(ArticleService $articleService)
+    {
+        $this->articleService = $articleService;
     }
 
-    // Filtrer par tag
-    if ($request->has('tag') && $request->tag != '') {
-      $query->whereHas('tags', function ($query) use ($request) {
-        $query->where('tags.id', $request->tag);
-      });
+    public function index(Request $request)
+    {
+        $data = $this->articleService->index($request);
+        
+        if (Auth::check() && Auth::user()->roles->contains('name', 'admin')) {
+            return view('Blog::admin.article.index', $data);
+        } else {
+            return view('Blog::public.index', $data);
+        }
     }
 
-    // Filtrer par recherche dans le titre ou le contenu
-    if ($request->has('search') && $request->search != '') {
-      $query->where(function ($query) use ($request) {
-        $query->where('title', 'like', '%' . $request->search . '%')
-          ->orWhere('content', 'like', '%' . $request->search . '%');
-      });
+    public function create()
+    {
+        if (!Auth::check() || !Auth::user()->roles->contains('name', 'admin')) {
+            return redirect()->route('articles.index');
+        }
+
+        $categories = Category::all();
+        $allTags = Tag::all();
+
+        return view('Blog::admin.article.create', compact('categories', 'allTags'));
     }
 
-    // Paginer les résultats
-    $articles = $query->paginate(10);
+    public function store(ArticleRequest $request)
+    {
+        if (!Auth::check() || !Auth::user()->roles->contains('name', 'admin')) {
+            return redirect()->route('articles.index');
+        }
 
-    // Ajouter les paramètres de filtrage à la pagination
-    $articles->appends($request->all());
-    $categories = \App\Models\Category::all();
-    $tags = \App\Models\Tag::all();
+        $this->articleService->create($request);
 
-
-    if (Auth::check() && Auth::user()->roles->contains('name', 'admin')) {
-      return view('admin.article.index', compact('articles', 'categories', 'tags','ArticleCount','CommentCount', 'UserCount' ));
-    } else {
-      return view('public.index', compact('articles', 'categories', 'tags'));
-    }
-  }
-
-  /**
-   * Show the form for creating a new resource.
-   */
-  public function create()
-  {
-    if (!Auth::check() || !Auth::user()->roles->contains('name', 'admin')) {
-      return redirect()->route('articles.index');
+        return redirect()->route('articles.index')->with('success', 'L\'article a bien été créé');
     }
 
-    $categories = Category::all();
-    $allTags = Tag::all();
+    public function show(string $id)
+    {
+        $article = $this->articleService->show($id);
+        $commentableId = $article->id;
+        $commentableType = Article::class;
 
-    return view('admin.article.create', compact('categories', 'allTags'));
-  }
-
-  /**
-   * Store a newly created resource in storage.
-   */
-  public function store(ArticleRequest $request)
-  {
-    if (!Auth::check() || !Auth::user()->roles->contains('name', 'admin')) {
-      return redirect()->route('articles.index');
+        if (Auth::check() && Auth::user()->roles->contains('name', 'admin')) {
+            return view('Blog::admin.article.show', compact('article', 'commentableId', 'commentableType'));
+        } else {
+            return view('Blog::public.show', compact('article', 'commentableId', 'commentableType'));
+        }
     }
 
-    // $validated = $request->validate([
-    //   'title' => 'required|string|max:255',
-    //   'category' => 'required|exists:categories,id',
-    //   'content' => 'required|string',
-    //   'tags' => 'array',
-    //   'tags.*' => 'exists:tags,id',
-    // ]);
+    public function edit($id)
+    {
+        if (!Auth::check() || !Auth::user()->roles->contains('name', 'admin')) {
+            return redirect()->route('Blog::articles.index');
+        }
 
-    // $article = Article::create([
-    //   'title' => $validated['title'],
-    //   'category_id' => $validated['category'],
-    //   'content' => $validated['content'],
-    // ]);
+        $article = Article::findOrFail($id);
+        $this->authorize('edit', $article);
+        $categories = Category::all();
+        $allTags = Tag::all();
+        $selectedTags = $article->tags->pluck('id')->toArray();
 
-    
-    $article = Article::create([
-          'title' => $request['title'],
-          'category_id' => $request['category'],
-          'content' => $request['content'],
-          'user_id'     => Auth::user()->id,
-    ]);
-
-    // Attach selected tags
-    $article->tags()->attach($request->tags);
-
-    return redirect()->route('articles.index')->with('success', 'L\'article a bien été créé');
-  }
-
-  /**
-   * Display the specified resource.
-   */
-  public function show(string $id)
-  {
-    $article = Article::with(['category', 'tags', 'comments'])->findOrFail($id);
-    $commentableId = $article->id;
-    $commentableType = Article::class;
-
-    if (Auth::check() && Auth::user()->roles->contains('name', 'admin')) {
-      return view('admin.article.show', compact('article', 'commentableId', 'commentableType'));
-    } else {
-      return view('public.show', compact('article', 'commentableId', 'commentableType'));
-    }
-  }
-
-  /**
-   * Show the form for editing the specified resource.
-   */
-  public function edit($id)
-  {
-    if (!Auth::check() || !Auth::user()->roles->contains('name', 'admin')) {
-      return redirect()->route('articles.index');
+        return view('Blog::admin.article.edit', compact('article', 'categories', 'allTags', 'selectedTags'));
     }
 
-    $article = Article::findOrFail($id);
-    $this->authorize('edit', $article);
-    $categories = Category::all();
-    $allTags = Tag::all();
-    $selectedTags = $article->tags->pluck('id')->toArray();
+    public function update(Request $request, $id)
+    {
+        if (!Auth::check() || !Auth::user()->roles->contains('name', 'admin')) {
+            return redirect()->route('Blog::articles.index');
+        }
 
-    return view('admin.article.edit', compact('article', 'categories', 'allTags', 'selectedTags'));
-  }
+        $this->articleService->update($request, $id);
 
-  /**
-   * Update the specified resource in storage.
-   */
-  public function update(Request $request, $id)
-  {
-    if (!Auth::check() || !Auth::user()->roles->contains('name', 'admin')) {
-      return redirect()->route('articles.index');
+        return redirect()->route('Blog::articles.index')->with('success', 'L\'article a bien été modifié');
     }
 
-    $validated = $request->validate([
-      'title' => 'required|string|max:255',
-      'category' => 'required|exists:categories,id',
-      'content' => 'required|string',
-      'tags' => 'array',
-      'tags.*' => 'exists:tags,id',
-    ]);
+    public function destroy(string $id)
+    {
+        if (!Auth::check() || !Auth::user()->roles->contains('name', 'admin')) {
+            return redirect()->route('Blog::articles.index');
+        }
 
-    $article = Article::findOrFail($id);
-    $article->update([
-      'title' => $validated['title'],
-      'category_id' => $validated['category'],
-      'content' => $validated['content'],
-    ]);
+        $this->articleService->destroy($id);
 
-    $article->tags()->sync($validated['tags'] ?? []);
-
-    $this->authorize('edit', $article);
-
-    return redirect()->route('articles.index')->with('success', 'L\'article a bien été modifié');
-  }
-
-  /**
-   * Remove the specified resource from storage.
-   */
-  public function destroy(string $id)
-  {
-    if (!Auth::check() || !Auth::user()->roles->contains('name', 'admin')) {
-      return redirect()->route('articles.index');
+        return redirect()->route('articles.index')->with('success', 'L\'article a bien été supprimé');
     }
-
-    $article = Article::where('id', $id);
-    $article->delete();
-    return redirect()->route('articles.index')->with('success', 'L\'article a bien été supprimé');
-  }
 }
