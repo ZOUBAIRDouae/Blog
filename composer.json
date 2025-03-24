@@ -27,10 +27,11 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
-            "Modules\\Blog\\": "Modules/Blog/"
+            "Modules\\PkgWidget\\": "Modules/PkgWidget/"
         },
         "classmap": [
-            "Modules/Blog/database/factories"
+            "Modules/PkgWidget/database/factories",
+            "Modules/PkgWidget/database/seeders"
         ]
     },
     "autoload-dev": {
