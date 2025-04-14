@@ -94,7 +94,7 @@ class ArticleController extends Controller
 
         $this->articleService->update($request, $id);
 
-        return redirect()->route('Blog::articles.index')->with('success', 'L\'article a bien été modifié');
+        return redirect()->route('articles.index')->with('success', 'L\'article a bien été modifié');
     }
 
     public function destroy(string $id)
