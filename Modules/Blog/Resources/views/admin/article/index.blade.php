@@ -51,7 +51,7 @@
         </div>
         <!-- /.card-header -->
          <div class="d-flex justify-content-between mx-3 mt-3">
-             <h3 class="card-title my-0">{{ __(key: 'message.list of article')}}</h3>
+             <h3 class="card-title my-0">{{ __(key: 'Blog::message.list of article')}}</h3>
              
             <a href="{{route('articles.create')}}" class="btn btn-success">{{ __(key: 'Blog::message.add article')}}</a>  
          </div>

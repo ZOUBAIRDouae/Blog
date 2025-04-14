@@ -10,6 +10,10 @@ use Modules\Blog\Controllers\CategoryController;
 use Modules\Blog\Controllers\CommentController;
 use Modules\Blog\Controllers\TagController;
 
+use Modules\Blog\App\Exports\ArticleExport;
+use Maatwebsite\Excel\Facades\Excel;
+
+
 Auth::routes();
 
 Route::prefix('articles')->group(function () {
@@ -54,6 +58,10 @@ Route::middleware('auth')->group(function () {
   Route::post('/store', [CommentController::class, 'store'])->name('comments.store');
   Route::delete('/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
  
+});
+
+Route::get('/export-articles', function () {
+  return Excel::download(new ArticleExport, 'articles.xlsx');
 });
 
 
