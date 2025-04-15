@@ -4,14 +4,36 @@ namespace Modules\Blog\App\Exports;
 
 use Modules\Blog\Models\Article;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Modules\Blog\Controllers\ArticleController;
 
-class ArticleExport implements FromCollection
+class ArticleExport implements FromCollection, WithHeadings
 {
-    /**
-    * @return \Illuminate\Support\Collection
-    */
     public function collection()
     {
-        return Article::all();
+        return Article::with(['category', 'tags'])->get()->map(function ($article) {
+            return [
+                'id' => $article->id,
+                'title' => $article->title,
+                'content' => $article->content,
+                'category_name' => $article->category->name,
+                'tags' => $article->tags->pluck('name')->join(', '),
+                'created_at' => $article->created_at->format('Y-m-d H:i:s'),
+                'updated_at' => $article->updated_at->format('Y-m-d H:i:s'),
+            ];
+        });
+    }
+
+    public function headings(): array
+    {
+        return [
+            'ID',
+            'Title',
+            'Content',
+            'Category',
+            'Tags',
+            'Created At',
+            'Updated At'
+        ];
     }
 }

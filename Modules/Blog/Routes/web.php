@@ -10,8 +10,7 @@ use Modules\Blog\Controllers\CategoryController;
 use Modules\Blog\Controllers\CommentController;
 use Modules\Blog\Controllers\TagController;
 
-use Modules\Blog\App\Exports\ArticleExport;
-use Maatwebsite\Excel\Facades\Excel;
+
 
 
 Auth::routes();
@@ -32,7 +31,7 @@ Route::middleware('auth' , 'role:admin')->group(function () {
     Route::get('/', [TagController::class, 'index'])->name('tags.index');
     Route::get('/create', [TagController::class, 'create'])->name('tags.create');
     Route::post('/store', [TagController::class, 'store'])->name('tags.store');
-    Route::delete('/{tag}', [TagController::class, 'destroy'])->name('tags.destroy');
+    Route::delete('/tags/{id}', [TagController::class, 'destroy'])->name('tags.destroy');
 });
 
   Route::prefix('categories')->group(function () {
@@ -60,8 +59,12 @@ Route::middleware('auth')->group(function () {
  
 });
 
-Route::get('/export-articles', function () {
-  return Excel::download(new ArticleExport, 'articles.xlsx');
-});
+
+Route::get('article/export/{format?}', [ArticleController::class, 'export'])->name('article.export');
+Route::post('/articles/import', [ArticleController::class, 'import'])->name('articles.import');
+
+
+
+
 
 

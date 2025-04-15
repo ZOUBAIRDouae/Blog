@@ -1,119 +1,140 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="container">
-
-    <h1> {{ __(key: 'Blog::message.manage articles' )}} </h1>
-  
+<div class="container-fluid px-4">
+    <h1 class="my-4 text-primary fw-bold">
+        {{ __('Blog::message.manage articles') }}
+    </h1>
 
     <x-admin-chart 
-    :ArticleCount="$ArticleCount"
-    :UserCount="$UserCount" 
-    :CommentCount="$CommentCount" > </x-admin-chart>
+        :ArticleCount="$ArticleCount"
+        :UserCount="$UserCount"
+        :CommentCount="$CommentCount" 
+    />
 
-    <div class="card">
-        <div class="card-header d-flex pb-0 pt-3">
-                <!-- input search --> 
-                <form method="GET" action="{{ route('articles.index') }}" class="d-flex mb-3 ">
-                    <div class="form-group  ">
-                        <input type="text" name="search" id="search" class="form-control " value="{{ request('search') }}" placeholder="Rechercher un article">
-                    </div>
-                    <div class="form-group  ">
-                    <button type="submit" class="btn btn-primary mx-3">{{ __(key: 'Blog::message.search')}}</button>
-                    </div>
-                </form>
+    <div class="card shadow-sm">
+        <div class="card-header bg-light">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <form method="GET" action="{{ route('articles.index') }}" class="d-flex">
+                        <input type="text" name="search" id="search" class="form-control" 
+                            value="{{ request('search') }}" placeholder="{{ __('Blog::message.search') }}">
+                        <button type="submit" class="btn btn-outline-primary ms-2">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
 
-                <!-- select category and tag -->
-                <form method="GET" action="{{ route('articles.index') }}" class="d-flex mb-3 mx-3">
-                    <div class="form-group mr-2 mx-2">
-                        <select name="category" id="category" class="form-control">
-                            <option value="">{{ __(key: 'Blog::message.all categories')}}</option>
+                <div class="col-md-6">
+                    <form method="GET" action="{{ route('articles.index') }}" class="d-flex justify-content-end">
+                        <select name="category" class="form-select me-2" style="max-width: 180px;">
+                            <option value="">{{ __('Blog::message.all categories') }}</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
                                     {{ $category->name }}
                                 </option>
                             @endforeach
                         </select>
-                    </div>
-                    <div class="form-group mr-2">
-                        <select name="tag" id="tag" class="form-control mx-2">
-                            <option value="">{{ __(key: 'Blog::message.all tags')}}</option>
+
+                        <select name="tag" class="form-select me-2" style="max-width: 180px;">
+                            <option value="">{{ __('Blog::message.all tags') }}</option>
                             @foreach($tags as $tag)
                                 <option value="{{ $tag->id }}" {{ request('tag') == $tag->id ? 'selected' : '' }}>
                                     {{ $tag->name }}
                                 </option>
                             @endforeach
                         </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary mx-3">{{ __(key: 'Blog::message.filter')}}</button>
-                </form>
 
+                        <button type="submit" class="btn btn-outline-primary">
+                            <i class="fas fa-filter"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
-        <!-- /.card-header -->
-         <div class="d-flex justify-content-between mx-3 mt-3">
-             <h3 class="card-title my-0">{{ __(key: 'Blog::message.list of article')}}</h3>
-             
-            <a href="{{route('articles.create')}}" class="btn btn-success">{{ __(key: 'Blog::message.add article')}}</a>  
-         </div>
-        
-            <div class="card-body">
-                @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-                 @endif
-            <table class="table table-bordered">
-                <thead>
+
+        <div class="card-body">
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">{{ __('Blog::message.list of article') }}</h5>
+                <div class="d-flex flex-wrap gap-2 justify-content-end align-items-center">
+
+                    <!-- Export CSV (Icon Only) -->
+                    <a href="{{ route('article.export', ['format' => 'csv']) }}" class="btn btn-outline-info" title="Exporter CSV">
+                        <i class="fas fa-arrow-down"></i>
+                    </a>
+                
+                    <!-- Import Form (Icon Only) -->
+                    <form action="{{ route('articles.import') }}" method="POST" enctype="multipart/form-data" class="d-flex align-items-center gap-2">
+                        @csrf
+                        <label for="import-file" class="btn btn-warning mb-0" title="Importer un fichier">
+                            <i class="fas fa-arrow-up"></i>
+                        </label>
+                        <input id="import-file" type="file" name="file" class="d-none" onchange="this.form.submit()" required>
+                    </form>
+                
+                    <!-- Add Article (Keep Icon + Text for clarity) -->
+                    <a href="{{ route('articles.create') }}" class="btn btn-success d-flex align-items-center">
+                        <i class="fas fa-plus me-2"></i> {{ __('Blog::message.add article') }}
+                    </a>
+                </div>                
+            </div>
+            <table class="table table-hover align-middle text-center">
+                <thead class="table-light">
                     <tr>
                         <th>ID</th>
-                        <th>{{ __(key: 'Blog::message.title')}}</th>
-                        <th>{{ __(key: 'Blog::message.category')}}</th>
-                        <th>{{ __(key: 'Blog::message.post date')}}</th>
-                        <th>{{ __(key: 'Blog::message.action')}}</th>
+                        <th>{{ __('Blog::message.title') }}</th>
+                        <th>{{ __('Blog::message.category') }}</th>
+                        <th>{{ __('Blog::message.post date') }}</th>
+                        <th>{{ __('Blog::message.action') }}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- logic pour recherch -->
-                     
                     @foreach($articles as $article)
                         @if(
                             (empty(request('category')) || $article->category->id == request('category')) &&
- 
                             ($article->tags->pluck('id')->contains(request('tag')) || !request('tag')) &&
-
                             (strpos($article->title, request('search')) !== false || strpos($article->content, request('search')) !== false || !request('search'))
-                    )
+                        )
                         <tr>
                             <td>{{ $article->id }}</td>
-                            <td>{{ $article->title }}</td>
+                            <td class="text-start">{{ $article->title }}</td>
                             <td>{{ $article->category->name }}</td>
                             <td>{{ $article->created_at->format('d/m/Y') }}</td>
                             <td>
-                                <a href="{{ route('articles.show', $article->id) }}" class="btn btn-secondary">{{ __(key: 'Blog::message.display')}}</a>
-
+                                <a href="{{ route('articles.show', $article->id) }}" class="btn btn-outline-secondary btn-sm" title="{{ __('Blog::message.display') }}">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                                 @can('update', $article)
-                                    <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-primary">{{ __(key: 'Blog::message.edit')}}</a>
+                                    <a href="{{ route('articles.edit', $article->id) }}" class="btn btn-outline-primary btn-sm" title="{{ __('Blog::message.edit') }}">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
                                 @endcan
-
                                 @can('delete', $article)
-                                    <form action="{{ route('articles.destroy', $article->id) }}" method="POST" style="display:inline;">
+                                    <form action="{{ route('articles.destroy', $article->id) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger">{{ __(key: 'Blog::message.delete')}}</button>
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" title="{{ __('Blog::message.delete') }}">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
                                     </form>
                                 @endcan
                             </td>
                         </tr>
                         @endif
                     @endforeach
-
                 </tbody>
             </table>
-            <!-- pagination -->
-            <div class="d-flex justify-content-center mt-3">
+
+            <div class="d-flex justify-content-center mt-4">
                 {{ $articles->links() }}
             </div>
         </div>
-        <!-- /.card-body -->
     </div>
-    <!-- /.card -->
-    </div>
+</div>
 @stop

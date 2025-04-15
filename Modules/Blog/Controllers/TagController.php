@@ -33,12 +33,12 @@ class TagController extends Controller
         ]);
 
         $this->tagService->createTag($validated);
-        return redirect()->route('Blog::tags.index')->with('success', 'Le tag a bien été créé');
+        return redirect()->route('tags.index')->with('success', 'Le tag a bien été créé');
     }
 
     public function destroy(string $id)
     {
         $this->tagService->deleteTag($id);
-        return redirect()->route('Blog::tags.index')->with('success', 'Le tag a bien été supprimé');
+        return redirect()->route('tags.index')->with('success', 'Le tag a bien été supprimé');
     }
 }

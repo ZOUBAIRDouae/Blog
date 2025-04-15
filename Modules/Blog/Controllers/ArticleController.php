@@ -15,6 +15,13 @@ use Modules\Blog\Requests\ArticleRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\Blog\App\Exports\ArticleExport;
+use Modules\Blog\App\Imports\ArticleImport;
+
+
+
+
 class ArticleController extends Controller
 {
     protected $articleService;
@@ -107,4 +114,33 @@ class ArticleController extends Controller
 
         return redirect()->route('articles.index')->with('success', 'L\'article a bien été supprimé');
     }
+
+    public function export($format = 'xlsx')
+    {
+        $allowedFormats = ['csv', 'xlsx'];
+
+        if (!in_array($format, $allowedFormats)) {
+            return redirect()->back()->with('error', 'Invalid format.');
+        }
+
+        return Excel::download(new ArticleExport, "article.$format", $format === 'csv' ? \Maatwebsite\Excel\Excel::CSV : \Maatwebsite\Excel\Excel::XLSX);
+
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,txt',
+        ]);
+
+        
+
+        Excel::import(new ArticleImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Articles importés avec succès !');
+    }
+
+
 }
+
+
